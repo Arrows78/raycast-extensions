@@ -25,6 +25,15 @@ export function MenuBar() {
     })
   }
 
+  const groupedTodos = todos?.reduce((acc, todo) => {
+    const status = todo.status?.name || "Unknown";
+    if (!acc[status]) {
+      acc[status] = [];
+    }
+    acc[status].push(todo);
+    return acc;
+  }, {} as Record<string, Todo[]>);
+
   return (
     <MenuBarExtra
       isLoading={isLoading}
@@ -42,23 +51,27 @@ export function MenuBar() {
         <MenuBarExtra.Item title="No Todos" />
       ) : null}
 
-      {!error
-        ? todos?.map((todo) => {
-          const { truncatedStr, isTruncated } = truncate(todo.title);
-          return (
-            <MenuBarExtra.Item
-              onAction={() => handleComplete(todo)}
-              key={todo.id}
-              icon={{
-                source: getProgressIcon(todo.inProgress ? 0.5 : 0),
-                tintColor: todo.inProgress ? Color.Yellow : Color.SecondaryText,
-              }}
-              title={truncatedStr}
-              tooltip={isTruncated ? todo.title : undefined}
-            />
-          );
-        })
-        : null}
+      {!error && groupedTodos && 
+        Object.keys(groupedTodos).map((status) => (
+          <MenuBarExtra.Section key={status} title={status}>
+            {groupedTodos[status]?.map((todo) => {
+              const { truncatedStr, isTruncated } = truncate(todo.title);
+              return (
+                <MenuBarExtra.Item
+                  onAction={() => handleComplete(todo)}
+                  key={todo.id}
+                  icon={{
+                    source: getProgressIcon(todo.inProgress ? 0.5 : 0),
+                    tintColor: todo.inProgress ? Color.Yellow : Color.SecondaryText,
+                  }}
+                  title={todo.status?.name + " " + truncatedStr}
+                  tooltip={isTruncated ? todo.title : undefined}
+                />
+              );
+            })}
+          </MenuBarExtra.Section>
+        ))
+      }
     </MenuBarExtra>
   )
 }
