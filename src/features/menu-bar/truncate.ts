@@ -1,3 +1,5 @@
-export function truncate(str: string) {
-  return str.length > 40 ? str.slice(0, 40 - 1) + '...' : str
+export function truncate(str: string, maxLength: number = 40) {
+  const isTruncated = str.length > maxLength;
+  const truncatedStr = isTruncated ? str.slice(0, maxLength - 1) + '...' : str;
+  return { truncatedStr, isTruncated };
 }

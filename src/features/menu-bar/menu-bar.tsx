@@ -43,7 +43,9 @@ export function MenuBar() {
       ) : null}
 
       {!error
-        ? todos?.map((todo) => (
+        ? todos?.map((todo) => {
+          const { truncatedStr, isTruncated } = truncate(todo.title);
+          return (
             <MenuBarExtra.Item
               onAction={() => handleComplete(todo)}
               key={todo.id}
@@ -51,9 +53,11 @@ export function MenuBar() {
                 source: getProgressIcon(todo.inProgress ? 0.5 : 0),
                 tintColor: todo.inProgress ? Color.Yellow : Color.SecondaryText,
               }}
-              title={truncate(todo.title)}
+              title={truncatedStr}
+              tooltip={isTruncated ? todo.title : undefined}
             />
-          ))
+          );
+        })
         : null}
     </MenuBarExtra>
   )
