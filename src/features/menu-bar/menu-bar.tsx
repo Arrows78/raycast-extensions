@@ -1,19 +1,30 @@
+import { useMemo } from 'react'
 import { useFilter } from '@/services/notion/hooks/use-filter'
 import { useLocalPreferences } from '@/services/notion/hooks/use-local-preferences'
 import { useTodos } from '@/services/notion/hooks/use-todos'
 import { completeTodo } from '@/services/notion/operations/complete-todo'
 import { Todo } from '@/types/todo'
 import { Color, MenuBarExtra } from '@raycast/api'
+import { getStatusGroup, getStatusColor } from "@/utils/statuses";
 import { getProgressIcon } from '@raycast/utils'
 import { truncate } from './truncate'
+import { useTodoList } from '@/features/todo-list/hooks/use-todo-list'
 
 export function MenuBar() {
-  const { preferences } = useLocalPreferences()
-  const { filterTodo } = useFilter()
+  const { preferences } = useLocalPreferences();
+  const { filterTodo } = useFilter();
   const { todos, error, isLoading, mutate } = useTodos({
     databaseId: preferences.databaseId,
     filter: filterTodo,
-  })
+  });
+
+  const { statuses } = useTodoList();
+
+  const statusById = useMemo(() => {
+    const map: Record<string, { id: string; name: string; color?: string }> = {};
+    statuses?.forEach((s) => (map[s.id] = s));
+    return map;
+  }, [statuses]);
 
   const handleComplete = async (todo: Todo) => {
     await mutate(completeTodo(todo.id), {
@@ -56,15 +67,19 @@ export function MenuBar() {
           <MenuBarExtra.Section key={status} title={status}>
             {groupedTodos[status]?.map((todo) => {
               const { truncatedStr, isTruncated } = truncate(todo.title);
+              const tintColor =
+                (todo.status?.id && statusById[todo.status.id]?.color) ??
+                Color.SecondaryText;
               return (
                 <MenuBarExtra.Item
                   onAction={() => handleComplete(todo)}
                   key={todo.id}
                   icon={{
-                    source: getProgressIcon(todo.inProgress ? 0.5 : 0),
-                    tintColor: todo.inProgress ? Color.Yellow : Color.SecondaryText,
+                    source: getProgressIcon(
+                      getStatusGroup(todo.status?.name ?? "") === "In progress" ? 0.5 : 0),
+                    tintColor,
                   }}
-                  title={todo.status?.name + " " + truncatedStr}
+                  title={truncatedStr}
                   tooltip={isTruncated ? todo.title : undefined}
                 />
               );
