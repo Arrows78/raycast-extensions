@@ -10,7 +10,7 @@
     "thomasjost"
   ],
   "access": "public",
-  "version": "2.0.4",
+  "version": "2.1.3",
   "categories": [
     "Developer Tools",
     "Design Tools",
@@ -31,7 +31,17 @@
       "subtitle": "Hypersonic",
       "description": "See your active tasks",
       "mode": "menu-bar",
-      "interval": "5m"
+      "interval": "5m",
+      "preferences": [
+        {
+          "name": "groupByStatus",
+          "type": "checkbox",
+          "label": "Group tasks by status",
+          "description": "If disabled, tasks are shown as a flat list",
+          "required": false,
+          "default": true
+        }
+      ]
     }
   ],
   "preferences": [],

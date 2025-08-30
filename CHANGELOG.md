@@ -1,5 +1,15 @@
 # Hypersonic Changelog
 
+## [2.1.3] - {PR_MERGE_DATE}
+
+#### New
+- Added a user preference in **Active Tasks** to toggle between grouping todos by status or showing them in a flat list.
+
+#### Updated
+- Restored color management for todos in the Active Tasks command.
+- Improved grouping logic by status in Active Tasks.
+- Added tooltip display for truncated todo titles.
+
 ## [2.1.2] - {PR_MERGE_DATE}
 
 #### Updated
